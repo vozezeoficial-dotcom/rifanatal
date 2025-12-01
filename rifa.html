@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Rifa de Natal da Vó Zezé – 10 Cestas + Doação</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      background: #120b10;
+      color: #fffbe9;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 6px 0;
+    }
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; margin-top: 18px; }
+    h3 { font-size: 14px; color: #ffe6b3; }
+
+    .container { max-width: 1000px; margin: 0 auto; }
+
+    .btn-whats-top {
+      display: none;
+      width: 100%;
+      padding: 12px;
+      margin: 14px 0;
+      border: none;
+      border-radius: 999px;
+      background: #25d366;
+      color: #06230f;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .card {
+      background: #1b1110;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255, 214, 130, 0.3);
+    }
+
+    .info {
+      font-size: 13px;
+      background: #221412;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .header-description {
+      background: #1d1513;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #ffeccc;
+      border: 1px solid rgba(255, 214, 130, 0.3);
+      margin-bottom: 18px;
+    }
+
+    .grid-wrapper {
+      margin-top: 10px;
+      background: #1b1110;
+      border-radius: 10px;
+      padding: 8px;
+      border: 1px solid rgba(255, 214, 130, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 6px;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+
+    .num-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      background: #3a2722;
+      color: #ffe6c4;
+      transition: 0.2s;
+    }
+
+    .num-btn:hover {
+      background: #f8c16f;
+      color: #1b1110;
+    }
+
+    .num-btn.disabled {
+      background: #2d201d;
+      color: #6b5b57;
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-size: 13px;
+      text-align: center;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <h1>Rifa de Natal da Vó Zezé 🎄🌿</h1>
+
+      <button id="btnWhatsTop" class="btn-whats-top">
+        Enviar comprovante no WhatsApp da Vó
+      </button>
+
+      <h2>Ação Solidária – 10 Cestas + 20% Doação</h2>
+
+      <div class="header-description">
+        A Vó Zezé preparou uma rifa especial para celebrar o Natal com axé, luz e caridade.
+        Serão sorteadas <strong>10 cestas completas</strong>.  
+        <br><br>
+        Cada número custa <strong>R$ 10,00</strong> e <strong>20% da arrecadação</strong> será doada
+        para uma instituição escolhida pelos seguidores.
+        <br><br>
+        Escolha seu número e envie o comprovante para a Vó. boa sorte! ✨
+      </div>
+
+      <div class="info">
+        <strong>Como participar:</strong><br>
+        1️⃣ Clique no número desejado.<br>
+        2️⃣ O sistema abre o pagamento oficial da InfinitePay.<br>
+        3️⃣ Envie comprovante + número escolhido no WhatsApp da Vó.<br>
+      </div>
+
+      <h3>Escolha seu número da sorte ✨</h3>
+
+      <button id="btnWhatsMobile" class="btn-whats-top" style="display:none;">
+        Enviar comprovante no WhatsApp da Vó
+      </button>
+
+      <div class="grid-wrapper">
+        <div id="numbersGrid" class="grid"></div>
+      </div>
+
+      <div id="mensagem" class="msg"></div>
+
+    </div>
+  </div>
+
+  <script>
+    var TOTAL_NUMEROS = 5000;
+    var WHATS_VO = "5548991248366";
+    var LINK_PAGAMENTO = "https://invoice.infinitepay.io/vozeze/6n4yu43KTB";
+
+    var grid = document.getElementById("numbersGrid");
+    var msg = document.getElementById("mensagem");
+    var btnWhatsTop = document.getElementById("btnWhatsTop");
+    var ultimoNumero = null;
+
+    function formatNumero(n) {
+      var s = String(n);
+      while (s.length < 4) { s = "0" + s; }
+      return s;
+    }
+
+    // gera botões
+    for (var i = 1; i <= TOTAL_NUMEROS; i++) {
+      var btn = document.createElement("button");
+      var num = formatNumero(i);
+      btn.textContent = num;
+      btn.className = "num-btn";
+      btn.setAttribute("data-num", num);
+
+      btn.onclick = (function(n, b){
+        return function(){ selecionarNumero(n, b); };
+      })(num, btn);
+
+      grid.appendChild(btn);
+    }
+
+    function selecionarNumero(numero, botao) {
+      ultimoNumero = numero;
+
+      msg.innerHTML = "Você escolheu o número <strong>" + numero + "</strong>.";
+
+      botao.classList.add("disabled");
+      botao.disabled = true;
+
+      window.open(LINK_PAGAMENTO, "_blank");
+
+      btnWhatsTop.style.display = "block";
+
+      btnWhatsTop.onclick = function() {
+        var texto = "Escolhi o número " + numero + " na rifa da Vó Zezé. Enviando comprovante agora!";
+        var url = "https://wa.me/" + WHATS_VO + "?text=" + encodeURIComponent(texto);
+        window.open(url, "_blank");
+      };
+    }
+  </script>
+
+</body>
+</html>
